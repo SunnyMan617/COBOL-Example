@@ -1,0 +1,29 @@
+//ACCTJOB  JOB (ACCT),'ACCOUNT MGMT BATCH',
+//         CLASS=A,MSGCLASS=X,NOTIFY=&SYSUID
+//*******************************************************************
+//* JOB: ACCTJOB
+//* DESC: Core Banking Account Management Batch Processing
+//* FREQ: Daily - End of Business Day
+//*******************************************************************
+//*
+//STEP010  EXEC PGM=ACCTMGMT,REGION=0M
+//STEPLIB  DD  DSN=PROD.BANKING.LOADLIB,DISP=SHR
+//ACCTMAST DD  DSN=PROD.ACCOUNT.MASTER,DISP=SHR
+//TXNLOG   DD  DSN=PROD.TXN.LOG(&DATE),
+//             DISP=(NEW,CATLG,DELETE),
+//             SPACE=(CYL,(100,50),RLSE),
+//             DCB=(RECFM=FB,LRECL=128,BLKSIZE=0)
+//SYSOUT   DD  SYSOUT=*
+//SYSPRINT DD  SYSOUT=*
+//*
+//STEP020  EXEC PGM=TXNPROC,REGION=0M,COND=(0,LT)
+//STEPLIB  DD  DSN=PROD.BANKING.LOADLIB,DISP=SHR
+//TXNINPUT DD  DSN=PROD.TXN.INPUT(&DATE),DISP=SHR
+//ACCTMAST DD  DSN=PROD.ACCOUNT.MASTER,DISP=SHR
+//AUDTTRAIL DD DSN=PROD.AUDIT.TRAIL(&DATE),
+//             DISP=(NEW,CATLG,DELETE),
+//             SPACE=(CYL,(200,100),RLSE),
+//             DCB=(RECFM=FB,LRECL=200,BLKSIZE=0)
+//SYSOUT   DD  SYSOUT=*
+//SYSPRINT DD  SYSOUT=*
+//*
